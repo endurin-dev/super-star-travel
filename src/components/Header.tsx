@@ -16,12 +16,16 @@ const PHONE        = { display: "+94 72 680 3498", tel: "+94726803498" };
 const WHATSAPP_URL = "https://wa.me/94726803498";
 const TELEGRAM_URL = "https://t.me/your_username";           // TODO: your Telegram username
 const SIGNAL_URL   = "https://signal.me/#p/+94726803498";
+const TOURS_URL    = "https://tours.superstartravelcabs.com/";
 
-const navLinks = [
+type NavLink = { href: string; label: string; external?: boolean };
+
+const navLinks: NavLink[] = [
   { href: "/",            label: "Home" },
   { href: "/fleet",       label: "Fleet" },
   { href: "/rates",       label: "Rates" },
   { href: "/reservation", label: "Reservation" },
+  { href: TOURS_URL,      label: "Tour Packages", external: true },
   { href: "/faq",         label: "FAQ" },
   { href: "/contact-us",  label: "Contact" },
 ];
@@ -118,6 +122,8 @@ export default function Header() {
         .hd-drawer *, .hd-drawer *::before, .hd-drawer *::after { box-sizing:border-box; }
         .hd :focus-visible, .hd-drawer :focus-visible { outline:3px solid var(--h-sun); outline-offset:2px; border-radius:8px; }
 
+        .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+
         /* ══ Bar: solid on inner pages, clear gradient over the home hero, frosted once scrolled ══ */
         .hd { position:fixed; top:0; left:0; right:0; z-index:9999; color:#fff; background:var(--h-teal-deep); transition:background .4s var(--h-ease), box-shadow .4s var(--h-ease); }
         .hd.is-home { background:linear-gradient(180deg, rgba(6,32,27,.86) 0%, rgba(6,32,27,.5) 55%, rgba(6,32,27,0) 100%); }
@@ -146,6 +152,8 @@ export default function Header() {
         .hd-link:hover { background:rgba(255,255,255,.14); color:#fff; }
         .hd-link.is-active { color:#fff; background:rgba(255,255,255,.12); box-shadow:inset 0 0 0 1px rgba(255,255,255,.2); }
         .hd-link.is-active::after { content:""; position:absolute; left:50%; bottom:3px; width:16px; height:3px; margin-left:-8px; border-radius:3px; background:var(--h-sun); }
+        .hd-ext { display:inline-block; margin-left:5px; vertical-align:-1px; opacity:.7; transition:opacity .22s; }
+        .hd-link:hover .hd-ext { opacity:1; }
 
         .hd-right { display:flex; align-items:center; gap:10px; flex-shrink:0; }
         .hd-chat { display:flex; align-items:center; gap:8px; }
@@ -269,16 +277,32 @@ export default function Header() {
 
           {/* ── Desktop nav ── */}
           <nav className="hd-nav" aria-label="Main">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`hd-link${isActive(link.href) ? " is-active" : ""}`}
-                aria-current={isActive(link.href) ? "page" : undefined}
-              >
-                {link.label}
-              </Link>
-            ))}
+            {navLinks.map((link) =>
+              link.external ? (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hd-link"
+                >
+                  {link.label}
+                  <svg className="hd-ext" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M7 17L17 7M8 7h9v9" />
+                  </svg>
+                  <span className="sr-only"> (opens in a new tab)</span>
+                </a>
+              ) : (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={`hd-link${isActive(link.href) ? " is-active" : ""}`}
+                  aria-current={isActive(link.href) ? "page" : undefined}
+                >
+                  {link.label}
+                </Link>
+              )
+            )}
           </nav>
 
           {/* ── Desktop right ── */}
@@ -351,20 +375,39 @@ export default function Header() {
             </div>
 
             <nav className="hd-d-nav" aria-label="Mobile">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className={`hd-d-link${isActive(link.href) ? " is-active" : ""}`}
-                  aria-current={isActive(link.href) ? "page" : undefined}
-                  onClick={() => setIsOpen(false)}
-                >
-                  <span className="hd-d-link-label">{link.label}</span>
-                  <svg className="hd-d-chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    <path d="M9 6l6 6-6 6" />
-                  </svg>
-                </Link>
-              ))}
+              {navLinks.map((link) =>
+                link.external ? (
+                  <a
+                    key={link.href}
+                    href={link.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hd-d-link"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <span className="hd-d-link-label">
+                      {link.label}
+                      <span className="sr-only"> (opens in a new tab)</span>
+                    </span>
+                    <svg className="hd-d-chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <path d="M7 17L17 7M8 7h9v9" />
+                    </svg>
+                  </a>
+                ) : (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className={`hd-d-link${isActive(link.href) ? " is-active" : ""}`}
+                    aria-current={isActive(link.href) ? "page" : undefined}
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <span className="hd-d-link-label">{link.label}</span>
+                    <svg className="hd-d-chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <path d="M9 6l6 6-6 6" />
+                    </svg>
+                  </Link>
+                )
+              )}
             </nav>
 
             <div className="hd-d-bottom">
